@@ -52,6 +52,7 @@ import static org.assertj.core.error.ShouldNotExist.shouldNotExist;
 import static org.assertj.core.error.ShouldStartWithPath.shouldStartWith;
 import static org.assertj.core.util.Files.getFileNameExtension;
 import static org.assertj.core.util.Preconditions.checkArgument;
+import static org.assertj.core.util.Strings.quote;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -69,6 +70,8 @@ import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Stream;
 
 import org.assertj.core.api.AssertionInfo;
@@ -80,6 +83,7 @@ import org.assertj.core.util.diff.Delta;
  * @author Valeriy Vyrva
  */
 public class Paths {
+  private static final Logger logger = Logger.getLogger(Paths.class.getCanonicalName());
 
   private static final String UNABLE_TO_COMPARE_PATH_CONTENTS = "Unable to compare contents of paths:<%s> and:<%s>";
 
@@ -484,9 +488,11 @@ public class Paths {
 
   private static Path toRealPath(Path path) {
     try {
+      // the real path is an implementation specific and absolute path for an existing file
       return path.toRealPath();
     } catch (IOException e) {
-      throw new UncheckedIOException(e);
+      logger.log(Level.INFO, "Unable to get real path for <%s>. Use absolute path as fallback.".formatted(quote(path)), e);
+      return path.toAbsolutePath();
     }
   }
 

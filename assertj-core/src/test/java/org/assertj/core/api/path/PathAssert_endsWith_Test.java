@@ -12,6 +12,7 @@
  */
 package org.assertj.core.api.path;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -19,6 +20,7 @@ import java.nio.file.Path;
 
 import org.assertj.core.api.PathAssert;
 import org.assertj.core.api.PathAssertBaseTest;
+import org.junit.jupiter.api.Test;
 
 class PathAssert_endsWith_Test extends PathAssertBaseTest {
 
@@ -32,5 +34,15 @@ class PathAssert_endsWith_Test extends PathAssertBaseTest {
   @Override
   protected void verify_internal_effects() {
     verify(paths).assertEndsWith(getInfo(assertions), getActual(assertions), other);
+  }
+
+  @Test
+  void should_success_on_non_existing_file() {
+    // GIVEN
+    Path actual = Path.of("foo/bar/bork");
+
+    // WHEN & THEN
+    assertThat(actual).endsWith(Path.of("bar/bork"));
+    assertThat(actual).endsWith(Path.of("bork"));
   }
 }
